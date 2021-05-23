@@ -11,12 +11,53 @@
         android:label="Home"
         tools:layout="@layout/fragment_home">
         <action
-            android:id="@+id/action_homeFragment_to_searchFragment"
+            android:id="@+id/action_homeFragment_to_searchFragment2"
             app:destination="@id/searchFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_detailsFragment"
+            app:destination="@id/detailsFragment" />
     </fragment>
     <fragment
         android:id="@+id/searchFragment"
         android:name="com.example.reads.search.SearchFragment"
         android:label="Search"
         tools:layout="@layout/fragment_search" />
+    <fragment
+        android:id="@+id/collectionsFragment"
+        android:name="com.example.reads.collections.CollectionsFragment"
+        android:label="Collections"
+        tools:layout="@layout/fragment_collections">
+        <action
+            android:id="@+id/action_collectionsFragment_to_searchFragment"
+            app:destination="@id/searchFragment" />
+        <action
+            android:id="@+id/action_collectionsFragment_to_detailsFragment"
+            app:destination="@id/detailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/accountFragment"
+        android:name="com.example.reads.account.AccountFragment"
+        android:label="Account"
+        tools:layout="@layout/fragment_account">
+        <action
+            android:id="@+id/action_accountFragment_to_searchFragment"
+            app:destination="@id/searchFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/discoverFragment"
+        android:name="com.example.reads.discover.DiscoverFragment"
+        android:label="Discover"
+        tools:layout="@layout/fragment_discover">
+        <action
+            android:id="@+id/action_discoverFragment_to_searchFragment"
+            app:destination="@id/searchFragment" />
+        <action
+            android:id="@+id/action_discoverFragment_to_detailsFragment"
+            app:destination="@id/detailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/detailsFragment"
+        android:name="com.example.reads.details.DetailsFragment"
+        android:label="fragment_details"
+        tools:layout="@layout/fragment_details" />
 </navigation>

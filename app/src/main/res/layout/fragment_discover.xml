@@ -2,14 +2,13 @@
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    tools:context=".home.HomeFragment">
+    android:layout_height="match_parent"
+    tools:context=".discover.DiscoverFragment">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/text_margin"
-        android:text="All your recommendations and trending books will appear right here within reach. Coming soon. "
-        android:textStyle="bold" />
-
+        android:textStyle="bold"
+        android:text="Time to discover new books. Coming soon." />
 </androidx.core.widget.NestedScrollView>
