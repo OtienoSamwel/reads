@@ -3,7 +3,7 @@ package com.example.reads.data.remote.model
 data class VolumeInfo(
     val allowAnonLogging: Boolean,
     val authors: List<String>,
-    val averageRating: Int,
+    val averageRating: Float,
     val canonicalVolumeLink: String,
     val categories: List<String>,
     val contentVersion: String,
