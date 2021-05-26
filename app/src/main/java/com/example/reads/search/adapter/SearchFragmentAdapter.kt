@@ -6,13 +6,13 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.net.toUri
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
-import coil.load
-import coil.transform.RoundedCornersTransformation
+import com.bumptech.glide.Glide
 import com.example.reads.R
 import com.example.reads.data.remote.model.Book
 
-class SearchFragmentAdapter(val data: Book) :
+class SearchFragmentAdapter(private val context: Fragment, val data: Book) :
     RecyclerView.Adapter<SearchFragmentAdapter.SearchFragmentViewHolder>() {
     class SearchFragmentViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val bookCover: ImageView = view.findViewById(R.id.book_image)
@@ -33,12 +33,9 @@ class SearchFragmentAdapter(val data: Book) :
     override fun onBindViewHolder(holder: SearchFragmentViewHolder, position: Int) {
         val item = data.items[position]
         try {
-            holder.bookCover.load(
+            Glide.with(context).load(
                 item.volumeInfo.imageLinks.thumbnail.toUri().buildUpon().scheme("https").build()
-            ) {
-                placeholder(R.drawable.ic_broken_image)
-                transformations(RoundedCornersTransformation(3f))
-            }
+            ).into(holder.bookCover)
         } catch (e: Exception) {
             holder.bookCover.setImageResource(R.drawable.ic_broken_image)
         }

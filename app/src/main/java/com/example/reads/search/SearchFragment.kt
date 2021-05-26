@@ -28,7 +28,7 @@ class SearchFragment : Fragment() {
         val recyclerView: RecyclerView = view.findViewById(R.id.search_recycler_view)
 
         viewModel.data.observe(viewLifecycleOwner, {
-            recyclerView.adapter = SearchFragmentAdapter(it)
+            recyclerView.adapter = SearchFragmentAdapter(context = this, data = it)
         })
     }
 
