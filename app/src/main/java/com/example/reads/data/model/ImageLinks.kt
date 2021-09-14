@@ -1,4 +1,4 @@
-package com.example.reads.data.remote.model
+package com.example.reads.data.model
 
 data class ImageLinks(
     val smallThumbnail: String,

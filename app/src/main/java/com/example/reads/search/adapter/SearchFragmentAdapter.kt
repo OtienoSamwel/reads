@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.reads.R
-import com.example.reads.data.remote.model.Book
+import com.example.reads.data.model.Book
 
 class SearchFragmentAdapter(private val context: Fragment, val data: Book) :
     RecyclerView.Adapter<SearchFragmentAdapter.SearchFragmentViewHolder>() {
