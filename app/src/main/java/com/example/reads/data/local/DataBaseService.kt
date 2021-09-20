@@ -15,13 +15,14 @@ object DataBaseModule {
 
     @Provides
     @Singleton
-    fun provideDb( @ApplicationContext context: Context): ReadsDatabase{
-        return Room.databaseBuilder(context,ReadsDatabase::class.java, "reads_db").build()
+    fun provideDb(@ApplicationContext context: Context): ReadsDatabase {
+        return Room.databaseBuilder(context, ReadsDatabase::class.java, "reads_db")
+            .fallbackToDestructiveMigration().build()
     }
 
     @Provides
     @Singleton
-    fun provideDao(database: ReadsDatabase): ReadsDao{
+    fun provideDao(database: ReadsDatabase): ReadsDao {
         return database.readsDao()
     }
 }

@@ -2,9 +2,11 @@ package com.example.reads.data.local
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.example.reads.data.model.Book
+import androidx.room.TypeConverters
+import com.example.reads.data.model.Item
 
-@Database(entities = [Book::class], version = 1)
+@TypeConverters(Converters::class)
+@Database(entities = [Item::class], version = 1, exportSchema = false)
 abstract class ReadsDatabase : RoomDatabase() {
     abstract fun readsDao(): ReadsDao
 }

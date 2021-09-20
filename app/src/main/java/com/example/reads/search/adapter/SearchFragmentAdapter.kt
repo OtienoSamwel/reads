@@ -21,7 +21,7 @@ class SearchFragmentAdapter(private val context: Fragment, val data: Book) :
     }
 
     override fun getItemCount(): Int {
-        return data.items.size
+        return data.items?.size!!
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchFragmentViewHolder {
@@ -31,16 +31,16 @@ class SearchFragmentAdapter(private val context: Fragment, val data: Book) :
     }
 
     override fun onBindViewHolder(holder: SearchFragmentViewHolder, position: Int) {
-        val item = data.items[position]
+        val item = data.items?.get(position)
         try {
             Glide.with(context).load(
-                item.volumeInfo.imageLinks.thumbnail.toUri().buildUpon().scheme("https").build()
+                item?.volumeInfo?.imageLinks?.thumbnail?.toUri()?.buildUpon()?.scheme("https")?.build()
             ).into(holder.bookCover)
         } catch (e: Exception) {
             holder.bookCover.setImageResource(R.drawable.ic_broken_image)
         }
-        holder.bookTitle.text = item.volumeInfo.title
-        holder.bookDescription.text = item.volumeInfo.description
+        holder.bookTitle.text = item?.volumeInfo?.title
+        holder.bookDescription.text = item?.volumeInfo?.description
 
     }
 }
