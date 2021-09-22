@@ -10,10 +10,6 @@
         android:icon="@drawable/ic_discover"
         android:title="Discover" />
     <item
-        android:id="@+id/searchFragment"
-        android:icon="@drawable/ic__search"
-        android:title="Search" />
-    <item
         android:id="@+id/collectionsFragment"
         android:icon="@drawable/ic_collections"
         android:title="Collections" />
