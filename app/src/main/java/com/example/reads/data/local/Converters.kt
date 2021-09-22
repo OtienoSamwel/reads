@@ -5,32 +5,44 @@ import com.example.reads.data.model.AccessInfo
 import com.example.reads.data.model.SaleInfo
 import com.example.reads.data.model.SearchInfo
 import com.example.reads.data.model.VolumeInfo
+import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.Moshi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 class Converters {
-    @TypeConverter
-    fun infoToJson(info: AccessInfo): String = Json.encodeToString(info)
+    private val moshi = Moshi.Builder().build()
 
     @TypeConverter
-    fun infoFromJson(json: String): AccessInfo = Json.decodeFromString(json)
+    fun infoToJson(info: AccessInfo): String =
+        moshi.adapter(AccessInfo::class.java).toJson(info)
 
     @TypeConverter
-    fun saleInfoToJson(saleInfo: SaleInfo): String = Json.encodeToString(saleInfo)
+    fun infoFromJson(json: String): AccessInfo? =
+        moshi.adapter(AccessInfo::class.java).fromJson(json)
 
     @TypeConverter
-    fun saleInfoFromJson(json: String): SaleInfo = Json.decodeFromString(json)
+    fun saleInfoToJson(saleInfo: SaleInfo): String =
+        moshi.adapter(SaleInfo::class.java).toJson(saleInfo)
 
     @TypeConverter
-    fun searchInfoToJson(searchInfo: SearchInfo): String = Json.encodeToString(searchInfo)
+    fun saleInfoFromJson(json: String): SaleInfo? =
+        moshi.adapter(SaleInfo::class.java).fromJson(json)
 
     @TypeConverter
-    fun searchInfoFromJson(json: String): SearchInfo = Json.decodeFromString(json)
+    fun searchInfoToJson(searchInfo: SearchInfo?): String =
+        moshi.adapter(SearchInfo::class.java).toJson(searchInfo)
 
     @TypeConverter
-    fun volumeInfoToJson(volumeInfo: VolumeInfo): String = Json.encodeToString(volumeInfo)
+    fun searchInfoFromJson(json: String): SearchInfo? =
+        moshi.adapter(SearchInfo::class.java).fromJson(json)
 
     @TypeConverter
-    fun volumeInfoFromJson(json: String): VolumeInfo = Json.decodeFromString(json)
+    fun volumeInfoToJson(volumeInfo: VolumeInfo): String =
+        moshi.adapter(VolumeInfo::class.java).toJson(volumeInfo)
+
+    @TypeConverter
+    fun volumeInfoFromJson(json: String): VolumeInfo? =
+        moshi.adapter(VolumeInfo::class.java).fromJson(json)
 }
