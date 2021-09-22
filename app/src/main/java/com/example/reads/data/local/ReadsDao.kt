@@ -4,14 +4,14 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.reads.data.model.Book
 import com.example.reads.data.model.Item
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ReadsDao {
     @Query("SELECT * FROM Item")
-    fun getDbBooks(): List<Item>
+    fun getDbBooks(): Flow<List<Item>>
 
-    @Insert(entity = Item::class, onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertBooks(items: List<Item>)
 }
