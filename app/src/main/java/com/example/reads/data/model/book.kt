@@ -6,27 +6,24 @@ import kotlinx.serialization.Serializable
 
 
 data class Book(
-    @PrimaryKey
-    val id: Int,
     val items: List<Item>,
     val kind: String,
     val totalItems: Int
 )
 
-@Entity(tableName = "Item")
+@Entity
 data class Item(
-    val accessInfo: AccessInfo,
+    val accessInfo: AccessInfo?,
     val etag: String,
     @PrimaryKey
     val id: String,
     val kind: String,
-    val saleInfo: SaleInfo,
-    val searchInfo: SearchInfo,
+    val saleInfo: SaleInfo?,
+    val searchInfo: SearchInfo?,
     val selfLink: String,
-    val volumeInfo: VolumeInfo
+    val volumeInfo: VolumeInfo?
 )
 
-@Serializable
 data class AccessInfo(
     val accessViewStatus: String,
     val country: String,
@@ -40,19 +37,16 @@ data class AccessInfo(
     val webReaderLink: String
 )
 
-@Serializable
 data class SaleInfo(
     val country: String,
     val isEbook: Boolean,
     val saleability: String
 )
 
-@Serializable
 data class SearchInfo(
-    val textSnippet: String
+    val textSnippet: String,
 )
 
-@Serializable
 data class VolumeInfo(
     val allowAnonLogging: Boolean,
     val authors: List<String>,
@@ -78,37 +72,31 @@ data class VolumeInfo(
     val title: String
 )
 
-@Serializable
 data class Epub(
     val acsTokenLink: String,
     val isAvailable: Boolean
 )
 
-@Serializable
 data class Pdf(
     val acsTokenLink: String,
     val isAvailable: Boolean
 )
 
-@Serializable
 data class ImageLinks(
     val smallThumbnail: String,
     val thumbnail: String
 )
 
-@Serializable
 data class IndustryIdentifier(
     val identifier: String,
     val type: String
 )
 
-@Serializable
 data class PanelizationSummary(
     val containsEpubBubbles: Boolean,
     val containsImageBubbles: Boolean
 )
 
-@Serializable
 data class ReadingModes(
     val image: Boolean,
     val text: Boolean
