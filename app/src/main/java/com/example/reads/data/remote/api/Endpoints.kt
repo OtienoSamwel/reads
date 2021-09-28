@@ -9,5 +9,5 @@ interface Endpoints {
     suspend fun getBooks(): Book
 
     @GET("/books/v1/volumes?maxResults=40")
-    suspend fun getGenreBooks(@Query("q") q: String): Book
+    suspend fun getGenreBooks(@Query("q") q: String, @Query("startIndex") startIndex: String): Book
 }
