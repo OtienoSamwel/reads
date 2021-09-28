@@ -2,7 +2,6 @@ package com.example.reads.data.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import kotlinx.serialization.Serializable
 
 
 data class Book(
@@ -11,7 +10,7 @@ data class Book(
     val totalItems: Int
 )
 
-@Entity
+@Entity(tableName = "Item")
 data class Item(
     val accessInfo: AccessInfo?,
     val etag: String,
