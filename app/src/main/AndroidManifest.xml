@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.reads">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
-        android:name=".ReadsApplication"
+        android:name="com.otienosamwel.reads.ReadsApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -13,15 +13,24 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Reads">
         <activity
-            android:windowSoftInputMode="adjustPan"
-            android:name=".MainActivity"
-            android:exported="true">
+            android:name="com.otienosamwel.reads.ui.presentation.features.splash.EntryActivity"
+            android:exported="true"
+            android:noHistory="true"
+            android:theme="@style/Theme.Reads.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
+        <activity
+            android:name="com.otienosamwel.reads.ui.presentation.features.auth.AuthActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.otienosamwel.reads.ui.presentation.features.main.MainActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
     </application>
 
 </manifest>
