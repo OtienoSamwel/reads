@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class HomeFragmentViewModel @Inject constructor() : ViewModel() {
+class HomeViewModel @Inject constructor() : ViewModel() {
 
 
     fun getBooks() {

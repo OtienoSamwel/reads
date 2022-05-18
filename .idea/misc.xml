@@ -5,6 +5,12 @@
       <map>
         <entry key="../../../../layout/compose-model-1651752489916.xml" value="0.32559121621621623" />
         <entry key="../../../../layout/compose-model-1651777069115.xml" value="0.32559121621621623" />
+        <entry key="app/src/main/java/com/otienosamwel/reads/ui/presentation/components/buttons.kt" value="0.5" />
+        <entry key="app/src/main/java/com/otienosamwel/reads/ui/presentation/features/auth/signIn/EmailSignIn.kt" value="0.2" />
+        <entry key="app/src/main/java/com/otienosamwel/reads/ui/presentation/features/auth/signIn/Login.kt" value="0.3135021097046414" />
+        <entry key="app/src/main/java/com/otienosamwel/reads/ui/presentation/features/auth/signIn/SignIn.kt" value="0.3135021097046414" />
+        <entry key="app/src/main/java/com/otienosamwel/reads/ui/presentation/features/auth/signIn/SignUp.kt" value="0.3135021097046414" />
+        <entry key="app/src/main/java/com/otienosamwel/reads/ui/presentation/features/home/Home.kt" value="0.25" />
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.267" />
         <entry key="app/src/main/res/drawable/ic__account.xml" value="0.267" />
         <entry key="app/src/main/res/drawable/ic__search.xml" value="0.267" />

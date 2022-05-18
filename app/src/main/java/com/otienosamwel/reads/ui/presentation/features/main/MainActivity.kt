@@ -86,11 +86,10 @@ fun BottomNav(navController: NavController) {
         }
     }
 }
-
-sealed class Screens(val route: String, val name: String, val Icon: ImageVector?) {
+private sealed class Screens(val route: String, val name: String, val Icon: ImageVector?) {
     object Home : Screens("home", "Home", Icons.Rounded.Home)
     object Feed : Screens("feed", "Feed", Icons.Rounded.Favorite)
     object Account : Screens("account", "Account", Icons.Rounded.AccountCircle)
 }
 
-val bottomNavScreens = listOf(Screens.Home, Screens.Feed, Screens.Account)
+private val bottomNavScreens = listOf(Screens.Home, Screens.Feed, Screens.Account)
