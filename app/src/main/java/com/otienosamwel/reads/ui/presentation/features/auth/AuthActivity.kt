@@ -12,11 +12,11 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.reads.R
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.otienosamwel.reads.R
 import com.otienosamwel.reads.ui.presentation.features.auth.signIn.Login
 import com.otienosamwel.reads.ui.presentation.features.auth.signIn.SignUp
 import com.otienosamwel.reads.ui.presentation.features.auth.signIn.SignUpState

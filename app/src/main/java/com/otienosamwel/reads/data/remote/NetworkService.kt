@@ -1,6 +1,9 @@
 package com.otienosamwel.reads.data.remote
 
+import android.content.Context
+import com.otienosamwel.reads.R
 import com.otienosamwel.reads.utils.Preferences
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
@@ -17,10 +20,13 @@ import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 
-class NetworkService @Inject constructor(private val preferences: Preferences) {
-    companion object {
-        private const val tokenUri = "" //todo
-    }
+class NetworkService @Inject constructor(
+    private val preferences: Preferences,
+    @ApplicationContext private val context: Context
+) {
+    private val tokenUri = "" //todo
+    private val baseUrl = context.getString(R.string.base_url)
+
 
     /**
      * This client is only used for authentication requests

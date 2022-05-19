@@ -11,12 +11,12 @@ android {
     buildToolsVersion "30.0.3"
 
 
-
     defaultConfig {
         Properties properties = new Properties()
         properties.load(project.rootProject.file("local.properties").newDataInputStream())
         resValue "string", "client_id", properties.getProperty("client.id", "")
-        
+        resValue "string", "base_url", properties.getProperty("base.url", "")
+
         applicationId "com.otienosamwel.reads"
         minSdkVersion 21
         targetSdkVersion 32
@@ -54,7 +54,7 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
-    namespace 'com.example.reads'
+    namespace 'com.otienosamwel.reads'
 }
 
 
