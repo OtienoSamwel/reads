@@ -104,10 +104,6 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.compose.ui:ui-test-junit4:1.1.1'
 
-    //showkase for compose previews
-    implementation "com.airbnb.android:showkase:1.0.0-beta12"
-    kapt "com.airbnb.android:showkase-processor:1.0.0-beta12"
-
     //google play
     implementation 'com.google.android.gms:play-services-auth:20.2.0'
 }
