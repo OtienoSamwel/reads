@@ -8,9 +8,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
+
+@Composable
+fun SpaceTiny() {
+    Spacer(modifier = Modifier.size(1.dp))
+}
+
 @Composable
 fun SpaceSmall() {
-    Spacer(modifier = Modifier.size(10.dp))
+    Spacer(modifier = Modifier.size(5.dp))
 }
 
 @Composable
