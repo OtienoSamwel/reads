@@ -60,14 +60,14 @@ android {
 
 dependencies {
 
-    implementation 'androidx.core:core-ktx:1.7.0'
+    implementation 'androidx.core:core-ktx:1.8.0'
     // for view models
     implementation 'androidx.fragment:fragment-ktx:1.4.1'
 
     //hilt
     implementation "com.google.dagger:hilt-android:$hilt_version"
-    implementation 'androidx.appcompat:appcompat:1.4.1'
-    implementation 'com.google.android.material:material:1.6.0'
+    implementation 'androidx.appcompat:appcompat:1.4.2'
+    implementation 'com.google.android.material:material:1.6.1'
     kapt "com.google.dagger:hilt-compiler:$hilt_version"
 
     //android room
@@ -85,7 +85,7 @@ dependencies {
 
     //jetpack compose
     implementation "androidx.activity:activity-compose:1.4.0"
-    implementation "androidx.compose.material3:material3:1.0.0-alpha11"
+    implementation "androidx.compose.material3:material3:1.0.0-alpha13"
     implementation "androidx.compose.animation:animation:1.1.1"
     implementation 'androidx.compose.ui:ui-tooling:1.1.1'
     implementation "androidx.compose.ui:ui:1.1.1"
@@ -93,11 +93,14 @@ dependencies {
     //compose navigation
     implementation "androidx.navigation:navigation-compose:2.4.2"
 
+    //hilt navigation with compose
+    implementation 'androidx.hilt:hilt-navigation-compose:1.0.0'
+
     //coil for compose
     implementation "io.coil-kt:coil-compose:2.0.0-rc03"
 
     //splash screen
-    implementation 'androidx.core:core-splashscreen:1.0.0-beta02'
+    implementation 'androidx.core:core-splashscreen:1.0.0-rc01'
 
     //testing
     testImplementation 'junit:junit:4.13.2'
@@ -106,6 +109,10 @@ dependencies {
 
     //google play
     implementation 'com.google.android.gms:play-services-auth:20.2.0'
+
+
+    //lottie
+    implementation "com.airbnb.android:lottie-compose:4.2.0"
 }
 
 

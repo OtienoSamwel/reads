@@ -16,7 +16,7 @@ class Preferences @Inject constructor(@ApplicationContext context: Context) {
     }
 
     fun getToken(): String? {
-        return preferences.getString(TOKEN_KEY, null)
+        return preferences.getString(TOKEN_KEY, "")
     }
 
     fun setToken(token: String) {
@@ -26,7 +26,7 @@ class Preferences @Inject constructor(@ApplicationContext context: Context) {
     }
 
     fun getRefreshToken(): String? {
-        return preferences.getString(REFRESH_TOKEN_KEY, null)
+        return preferences.getString(REFRESH_TOKEN_KEY, "")
     }
 
     fun setRefreshToken(token: String) {

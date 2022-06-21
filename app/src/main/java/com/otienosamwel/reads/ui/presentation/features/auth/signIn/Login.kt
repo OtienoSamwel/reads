@@ -6,7 +6,10 @@ import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -15,25 +18,20 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import com.otienosamwel.reads.ui.presentation.components.LoginButton
 import com.otienosamwel.reads.ui.presentation.components.SpaceLarge
 import com.otienosamwel.reads.ui.presentation.components.SpaceMedium
 import com.otienosamwel.reads.ui.presentation.components.SpaceSmall
+import com.otienosamwel.reads.ui.presentation.features.auth.AuthActivity
 import com.otienosamwel.reads.ui.presentation.features.auth.AuthScreens
 import com.otienosamwel.reads.ui.presentation.features.auth.AuthViewModel
-import com.otienosamwel.reads.ui.theme.ReadsTheme
-import com.otienosamwel.reads.utils.toast
 
 @Composable
-fun Login(
-    authViewModel: AuthViewModel,
-    navController: NavController,
-    signInWithGoogle: () -> Unit
-) {
+fun Login(navController: NavController, signInWithGoogle: () -> Unit) {
     val scrollState = rememberScrollState()
 
+    val authViewModel: AuthViewModel = hiltViewModel()
     Column(
         modifier = Modifier
             .padding(20.dp)
@@ -65,7 +63,7 @@ fun Login(
 
         SpaceMedium()
 
-        SingInButton(viewModel = authViewModel, state = authViewModel.loginState)
+        SingInButton(viewModel = authViewModel)
 
         SpaceSmall()
 
@@ -77,20 +75,29 @@ fun Login(
 
         SpaceMedium()
 
-       ContinueWithGoogle(onClick = signInWithGoogle)
+        ContinueWithGoogle(onClick = signInWithGoogle)
     }
 }
 
 
 @Composable
-fun SingInButton(viewModel: AuthViewModel, state: LoginState) {
-    val context = LocalContext.current
+fun SingInButton(viewModel: AuthViewModel) {
+    val context = LocalContext.current as AuthActivity
 
     OutlinedButton(
-        onClick = { if (state.validate()) context.toast("Email and passcode validated") },
+        onClick = {
+            if (viewModel.loginState.validate() && !viewModel.loginState.isLoginLoading) {
+                viewModel.signInWithEmail(
+                    viewModel.loginState.email,
+                    viewModel.loginState.password,
+                    context
+                )
+            }
+        },
         modifier = Modifier.fillMaxWidth()
     ) {
-        Text(text = "Sign In")
+        if (!viewModel.loginState.isLoginLoading) Text(text = "Sign In")
+        if (viewModel.loginState.isLoginLoading) LoadingButtonAnimation()
     }
 }
 
@@ -113,7 +120,7 @@ fun DoNotHaveAnAccount(navController: NavController) {
     Row {
         Text(text = "Don't have an account?")
         Spacer(modifier = Modifier.width(4.dp))
-        Text(text = "Sing up",
+        Text(text = "Sign up",
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.clickable(true) {
                 navController.navigate(AuthScreens.Register.route)
@@ -124,13 +131,4 @@ fun DoNotHaveAnAccount(navController: NavController) {
 @Preview(showBackground = true)
 @Composable
 fun EmailSingInPreview() {
-    ReadsTheme {
-        Surface(color = MaterialTheme.colorScheme.background) {
-            Login(
-                authViewModel = AuthViewModel(),
-                navController = rememberNavController(),
-                signInWithGoogle = {}
-            )
-        }
-    }
 }

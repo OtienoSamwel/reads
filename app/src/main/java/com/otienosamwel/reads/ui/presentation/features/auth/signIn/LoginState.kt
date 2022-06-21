@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 
 open class LoginState {
 
+    var isLoginLoading by mutableStateOf(false)
     var email by mutableStateOf("")
     var password by mutableStateOf("")
 
@@ -14,12 +15,12 @@ open class LoginState {
 
     fun emailChanged(email: String) {
         emailHasError = false
-        this.email = email
+        this.email = email.trim()
     }
 
     fun passwordChanged(password: String) {
         passwordHasError = false
-        this.password = password
+        this.password = password.trim()
     }
 
     private fun isEmailValid(): Boolean {
@@ -35,5 +36,12 @@ open class LoginState {
         if (!isEmailValid()) emailHasError = true
         if (!isPasswordValid()) passwordHasError = true
         return (isEmailValid() && isPasswordValid())
+    }
+
+    fun clearState() {
+        email = ""
+        password = ""
+        emailHasError = false
+        passwordHasError = false
     }
 }

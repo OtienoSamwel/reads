@@ -14,6 +14,9 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.otienosamwel.reads.R
 import com.otienosamwel.reads.ui.presentation.components.LoginButton
 import com.otienosamwel.reads.ui.presentation.components.Sizes
@@ -94,6 +97,20 @@ fun ErrorMessage(message: String) {
         modifier = Modifier.fillMaxWidth()
     )
 }
+
+@Composable
+fun LoadingButtonAnimation() {
+    val composition by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(R.raw.loading_bubbles))
+    LottieAnimation(
+        composition = composition,
+        iterations = Int.MAX_VALUE,
+        modifier = Modifier
+            .padding(0.dp)
+            .size(24.dp)
+    )
+}
+
+
 
 
 

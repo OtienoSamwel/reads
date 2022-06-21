@@ -15,16 +15,16 @@ import io.ktor.client.plugins.logging.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 
 class NetworkService @Inject constructor(
-    private val preferences: Preferences,
-    @ApplicationContext private val context: Context
+    private val preferences: Preferences, @ApplicationContext private val context: Context
 ) {
-    private val tokenUri = "" //todo
     private val baseUrl = context.getString(R.string.base_url)
 
 
@@ -60,6 +60,7 @@ class NetworkService @Inject constructor(
      */
     @OptIn(ExperimentalSerializationApi::class)
     private val client = HttpClient(CIO) {
+
         expectSuccess = false
 
         defaultRequest {
@@ -85,27 +86,7 @@ class NetworkService @Inject constructor(
                 loadTokens {
                     BearerTokens(preferences.getToken()!!, preferences.getRefreshToken()!!)
                 }
-
-                refreshTokens {
-                    getRefreshTokenInfo()
-                    BearerTokens(preferences.getToken()!!, preferences.getRefreshToken()!!)
-                }
             }
-        }
-    }
-
-    /**
-     * makes the refresh token request and saves the new tokens to the shared preferences
-     */
-    private suspend fun RefreshTokensParams.getRefreshTokenInfo(): TokenInfo {
-        return tokenClient.post(tokenUri) {
-            setBody(
-                RefreshTokenRequest(refreshToken = preferences.getRefreshToken()!!)
-            )
-            markAsRefreshTokenRequest()
-        }.body<TokenInfo>().also { tokenInfo ->
-            tokenInfo.accessToken?.let { accessToken -> preferences.setToken(token = accessToken) }
-            tokenInfo.refreshToken?.let { refreshToken -> preferences.setRefreshToken(token = refreshToken) }
         }
     }
 
@@ -114,17 +95,63 @@ class NetworkService @Inject constructor(
      * @param email the user's registered email
      * @param password the user's password
      */
-    suspend fun getInitialTokenInfo(email: String, password: String) {
-        tokenClient.post(tokenUri) {
+    suspend fun getInitialTokenInfo(email: String, password: String): SignInResponse =
+        withContext(Dispatchers.IO) {
+            return@withContext try {
+                val httpResponse = tokenClient.post("$baseUrl/user/login") {
+                    setBody(
+                        TokenRequest(
+                            email = email,
+                            password = password,
+                        )
+                    )
+                }
+
+                if (httpResponse.status == HttpStatusCode.OK) {
+                    httpResponse.body<TokenInfo>().also { tokenInfo ->
+                        tokenInfo.accessToken?.let { accessToken -> preferences.setToken(token = accessToken) }
+                    }
+                    SignInResponse(hasError = false)
+                } else {
+                    throw Exception(httpResponse.toString())
+                }
+
+            } catch (e: Exception) {
+                SignInResponse(hasError = true)
+            }
+        }
+
+    suspend fun getInitialTokenInfoGoogle(googleIdToken: String) = withContext(Dispatchers.IO) {
+        tokenClient.post("$baseUrl/user/google_sign_in") {
             setBody(
-                AccessTokenRequest(
-                    email = email,
-                    password = password,
-                )
+                TokenRequestGoogle(idToken = googleIdToken)
             )
         }.body<TokenInfo>().also { tokenInfo ->
             tokenInfo.accessToken?.let { accessToken -> preferences.setToken(token = accessToken) }
-            tokenInfo.refreshToken?.let { refreshToken -> preferences.setRefreshToken(token = refreshToken) }
+        }
+    }
+
+    suspend fun signUpUserWithEmail(
+        firstName: String, lastname: String, email: String, password: String
+    ): SignUpResponse = withContext(Dispatchers.IO) {
+        return@withContext try {
+            val httpResponse = client.post("$baseUrl/user/signup") {
+                setBody(
+                    SignUpRequest(
+                        firstName = firstName,
+                        lastName = lastname,
+                        email = email,
+                        password = password,
+                    )
+                )
+            }
+            if (httpResponse.status == HttpStatusCode.Created) {
+                SignUpResponse(hasError = false)
+            } else {
+                throw Exception(httpResponse.status.toString())
+            }
+        } catch (e: Exception) {
+            SignUpResponse(hasError = true)
         }
     }
 
@@ -133,5 +160,4 @@ class NetworkService @Inject constructor(
      * kills the client when the apps on destroy is called
      */
     fun closeClient() = client.close()
-
 }

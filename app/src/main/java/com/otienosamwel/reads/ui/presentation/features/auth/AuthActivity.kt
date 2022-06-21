@@ -19,7 +19,6 @@ import com.google.android.gms.common.api.ApiException
 import com.otienosamwel.reads.R
 import com.otienosamwel.reads.ui.presentation.features.auth.signIn.Login
 import com.otienosamwel.reads.ui.presentation.features.auth.signIn.SignUp
-import com.otienosamwel.reads.ui.presentation.features.auth.signIn.SignUpState
 import com.otienosamwel.reads.ui.theme.ReadsTheme
 import com.otienosamwel.reads.utils.Preferences
 import dagger.hilt.android.AndroidEntryPoint
@@ -40,6 +39,8 @@ class AuthActivity : ComponentActivity() {
                 val idToken = task.result.idToken
                 idToken?.let { token ->
                     preferences.setGoogleIdToken(token)
+                    authViewModel.singInWithGoogle(token)
+
                 }
                 //todo send token to server for jwt authentication
             } catch (e: ApiException) {
@@ -89,15 +90,10 @@ fun AuthNavigation(authViewModel: AuthViewModel, signInWithGoogle: () -> Unit) {
 
     NavHost(navController = navController, startDestination = "Login") {
         composable(AuthScreens.Login.route) {
-            Login(
-                authViewModel = authViewModel,
-                navController = navController,
-                signInWithGoogle = signInWithGoogle
-            )
+            Login(navController = navController, signInWithGoogle = signInWithGoogle)
         }
         composable(AuthScreens.Register.route) {
             SignUp(
-                state = SignUpState(),
                 navController = navController,
                 signInWithGoogle = signInWithGoogle
             )
