@@ -1,6 +1,5 @@
 package com.otienosamwel.reads.ui.presentation.features.auth.signIn
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
@@ -32,7 +31,10 @@ fun WelcomeText() {
 
 @Composable
 fun ContinueWithGoogle(onClick: () -> Unit) {
-    LoginButton(text = "Continue with google", onClick = onClick, icon = R.drawable.ic_google_logo)
+    LoginButton(
+        text = "Continue with google",
+        onClick = onClick, icon = R.drawable.ic_google_logo
+    )
 }
 
 @Preview(showBackground = true)
