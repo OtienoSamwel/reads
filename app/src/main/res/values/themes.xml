@@ -2,8 +2,8 @@
     <!-- Base application theme. -->
     <style name="Theme.Reads" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Status bar color. -->
-        <item name="android:windowTranslucentStatus">true</item>
-        <item name="android:windowTranslucentNavigation">true</item>
+<!--        <item name="android:windowTranslucentStatus">true</item>-->
+<!--       <item name="android:windowTranslucentNavigation">true</item>-->
     </style>
 
     <style name="Theme.Reads.Splash" parent="Theme.SplashScreen">
