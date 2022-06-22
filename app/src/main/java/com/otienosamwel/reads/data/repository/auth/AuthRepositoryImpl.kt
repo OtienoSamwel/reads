@@ -2,6 +2,7 @@ package com.otienosamwel.reads.data.repository.auth
 
 import com.otienosamwel.reads.data.remote.NetworkService
 import com.otienosamwel.reads.data.remote.SignInResponse
+import com.otienosamwel.reads.data.remote.SignInWithGoogleResponse
 import com.otienosamwel.reads.data.remote.SignUpResponse
 import javax.inject.Inject
 
@@ -12,8 +13,8 @@ class AuthRepositoryImpl @Inject constructor(private val networkService: Network
         return networkService.getInitialTokenInfo(email, password)
     }
 
-    override suspend fun signInUserWithGoogle(idToken: String) {
-        networkService.getInitialTokenInfoGoogle(idToken)
+    override suspend fun signInUserWithGoogle(idToken: String): SignInWithGoogleResponse {
+       return networkService.getInitialTokenInfoGoogle(idToken)
     }
 
     override suspend fun signUpUserWithEmail(

@@ -41,15 +41,42 @@ class AuthViewModel @Inject constructor(private val authRepository: AuthReposito
                 }
 
             } else {
-                activity.toast("There was an error signing in. Please try again later")
+
+                if (response.errorMessage != null) {
+                    activity.toast(response.errorMessage)
+                } else {
+                    activity.toast("There was an error signing in. Please try again later")
+                }
+
             }
 
         }
     }
 
-    fun singInWithGoogle(googleIdToken: String) {
+    fun singInWithGoogle(googleIdToken: String, activity: AuthActivity) {
         viewModelScope.launch {
-            authRepository.signInUserWithGoogle(googleIdToken)
+
+            loginState.isGoogleLoginLoading = true
+            val response =
+                withContext(Dispatchers.IO) { authRepository.signInUserWithGoogle(googleIdToken) }
+
+            loginState.isGoogleLoginLoading = false
+
+            if (!response.hasError) {
+                loginState.clearState()
+                signUpState.clearState()
+
+                withContext(Dispatchers.Main) {
+                    activity.startActivity(Intent(activity, MainActivity::class.java))
+                    activity.finish()
+                }
+            } else {
+                if (response.errorMessage != null) {
+                    activity.toast(response.errorMessage)
+                } else {
+                    activity.toast("There was an error signing in. Please try again later")
+                }
+            }
         }
     }
 

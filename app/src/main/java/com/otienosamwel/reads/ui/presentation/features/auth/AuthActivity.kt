@@ -40,9 +40,8 @@ class AuthActivity : ComponentActivity() {
                 idToken?.let { token ->
                     preferences.setGoogleIdToken(token)
                     authViewModel.singInWithGoogle(token)
-
                 }
-                //todo send token to server for jwt authentication
+
             } catch (e: ApiException) {
                 e.printStackTrace()
             }
@@ -54,10 +53,7 @@ class AuthActivity : ComponentActivity() {
         setContent {
             ReadsTheme {
                 Surface(color = MaterialTheme.colorScheme.background) {
-                    AuthNavigation(
-                        authViewModel = authViewModel,
-                        signInWithGoogle = this::singInWithGoogle
-                    )
+                    AuthNavigation(signInWithGoogle = this::singInWithGoogle)
                 }
             }
         }
@@ -69,7 +65,7 @@ class AuthActivity : ComponentActivity() {
 
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
-        Log.i(TAG, "onCreate: ${preferences.getGoogleIdToken()}")
+        Log.i(TAG, "onCreate: ${preferences.getToken()}")
     }
 
     private fun singInWithGoogle() {
@@ -84,7 +80,7 @@ class AuthActivity : ComponentActivity() {
 }
 
 @Composable
-fun AuthNavigation(authViewModel: AuthViewModel, signInWithGoogle: () -> Unit) {
+fun AuthNavigation(signInWithGoogle: () -> Unit) {
 
     val navController = rememberNavController()
 
