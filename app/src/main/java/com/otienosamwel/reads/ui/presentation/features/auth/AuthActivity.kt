@@ -39,7 +39,7 @@ class AuthActivity : ComponentActivity() {
                 val idToken = task.result.idToken
                 idToken?.let { token ->
                     preferences.setGoogleIdToken(token)
-                    authViewModel.singInWithGoogle(token)
+                    authViewModel.singInWithGoogle(token, this)
                 }
 
             } catch (e: ApiException) {
