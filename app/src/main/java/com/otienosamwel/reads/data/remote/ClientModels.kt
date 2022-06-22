@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class TokenInfo(
-    @SerialName("access_token") val accessToken: String?,
+    @SerialName("token") val accessToken: String?,
     @SerialName("expires") val expiresIn: Int?,
     @SerialName("refresh_token") val refreshToken: String? = null,
 )
@@ -30,9 +30,16 @@ data class SignUpRequest(
 )
 
 data class SignUpResponse(
-    val hasError: Boolean
+    val hasError: Boolean,
+    val errorMessage: String? = null
 )
 
 data class SignInResponse(
-    val hasError: Boolean
+    val hasError: Boolean,
+    val errorMessage: String? = null
+)
+
+data class SignInWithGoogleResponse(
+    val hasError: Boolean,
+    val errorMessage: String? = null
 )
