@@ -107,13 +107,23 @@ class NetworkService @Inject constructor(
                     )
                 }
 
-                if (httpResponse.status == HttpStatusCode.OK) {
-                    httpResponse.body<TokenInfo>().also { tokenInfo ->
-                        tokenInfo.accessToken?.let { accessToken -> preferences.setToken(token = accessToken) }
+                when (httpResponse.status) {
+                    HttpStatusCode.OK -> {
+                        httpResponse.body<TokenInfo>().also { tokenInfo ->
+                            preferences.setToken(tokenInfo.accessToken!!)
+
+                        }
+                        SignInResponse(hasError = false)
                     }
-                    SignInResponse(hasError = false)
-                } else {
-                    throw Exception(httpResponse.toString())
+                    HttpStatusCode.Unauthorized -> {
+                        SignInResponse(
+                            hasError = true,
+                            errorMessage = "Incorrect password provided."
+                        )
+                    }
+                    else -> {
+                        throw Exception(httpResponse.toString())
+                    }
                 }
 
             } catch (e: Exception) {
@@ -121,15 +131,29 @@ class NetworkService @Inject constructor(
             }
         }
 
-    suspend fun getInitialTokenInfoGoogle(googleIdToken: String) = withContext(Dispatchers.IO) {
-        tokenClient.post("$baseUrl/user/google_sign_in") {
-            setBody(
-                TokenRequestGoogle(idToken = googleIdToken)
-            )
-        }.body<TokenInfo>().also { tokenInfo ->
-            tokenInfo.accessToken?.let { accessToken -> preferences.setToken(token = accessToken) }
+    suspend fun getInitialTokenInfoGoogle(googleIdToken: String): SignInWithGoogleResponse =
+        withContext(Dispatchers.IO) {
+            return@withContext try {
+                val httpResponse = tokenClient.post("$baseUrl/user/google_sign_in") {
+                    setBody(
+                        TokenRequestGoogle(idToken = googleIdToken)
+                    )
+                }
+
+                if (httpResponse.status == HttpStatusCode.OK) {
+                    httpResponse.body<TokenInfo>().also { tokenInfo ->
+                        preferences.setToken(tokenInfo.accessToken!!)
+                    }
+                    SignInWithGoogleResponse(hasError = false)
+                } else {
+                    throw Exception(httpResponse.toString())
+                }
+
+            } catch (e: Exception) {
+                SignInWithGoogleResponse(hasError = true)
+            }
         }
-    }
+
 
     suspend fun signUpUserWithEmail(
         firstName: String, lastname: String, email: String, password: String
