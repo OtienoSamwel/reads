@@ -22,9 +22,9 @@ class EntryActivity : ComponentActivity() {
         installSplashScreen()
 
         val activity =
-            if (preferences.hasSeenOnBoarding() && !preferences.getToken().isNullOrBlank()) {
+            if (!preferences.getToken().isNullOrBlank()) {
                 MainActivity::class.java
-            } else if (preferences.getToken().isNullOrBlank() && preferences.hasSeenOnBoarding()) {
+            } else if (preferences.getToken().isNullOrBlank()) {
                 AuthActivity::class.java
             } else {
                 AuthActivity::class.java
