@@ -5,8 +5,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AccountCircle
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.ripple.LocalRippleTheme
@@ -28,9 +30,6 @@ import com.otienosamwel.reads.ui.theme.ReadsTheme
 import com.otienosamwel.reads.utils.ClearRippleTheme
 
 class MainActivity : ComponentActivity() {
-    companion object {
-        private val TAG = MainActivity::class.simpleName
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,11 +49,16 @@ class MainActivity : ComponentActivity() {
 fun Navigation() {
     val navController = rememberNavController()
     Scaffold(modifier = Modifier.fillMaxSize(), bottomBar = { BottomNav(navController) })
-    {
-        NavHost(navController, startDestination = Screens.Home.route) {
+    { scaffoldPaddingValues ->
+        NavHost(
+            navController,
+            startDestination = Screens.Home.route,
+            modifier = Modifier.padding(scaffoldPaddingValues)
+        ) {
             composable(route = Screens.Home.route) { Home(navController = navController) }
             composable(route = Screens.Feed.route) {}
             composable(route = Screens.Account.route) {}
+            composable(route = Screens.Collections.route) {}
         }
     }
 }
@@ -86,10 +90,13 @@ fun BottomNav(navController: NavController) {
         }
     }
 }
+
 private sealed class Screens(val route: String, val name: String, val Icon: ImageVector?) {
     object Home : Screens("home", "Home", Icons.Rounded.Home)
     object Feed : Screens("feed", "Feed", Icons.Rounded.Favorite)
     object Account : Screens("account", "Account", Icons.Rounded.AccountCircle)
+    object Collections : Screens("collections", "Collections", Icons.Rounded.Add)
 }
 
-private val bottomNavScreens = listOf(Screens.Home, Screens.Feed, Screens.Account)
+private val bottomNavScreens =
+    listOf(Screens.Home, Screens.Feed, Screens.Collections, Screens.Account)
