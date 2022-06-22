@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 open class LoginState {
 
     var isLoginLoading by mutableStateOf(false)
+    var isGoogleLoginLoading by mutableStateOf(false)
     var email by mutableStateOf("")
     var password by mutableStateOf("")
 
