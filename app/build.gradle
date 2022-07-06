@@ -113,6 +113,9 @@ dependencies {
 
     //lottie
     implementation "com.airbnb.android:lottie-compose:4.2.0"
+
+    //livedata as state
+    implementation 'androidx.compose.runtime:runtime-livedata:1.3.0-alpha01'
 }
 
 

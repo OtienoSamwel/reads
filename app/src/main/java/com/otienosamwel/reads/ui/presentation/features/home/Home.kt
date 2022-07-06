@@ -2,7 +2,6 @@ package com.otienosamwel.reads.ui.presentation.features.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
@@ -13,10 +12,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.otienosamwel.reads.data.model.Book
-import com.otienosamwel.reads.ui.presentation.components.BookItem
-import com.otienosamwel.reads.ui.presentation.components.SpaceMedium
-import com.otienosamwel.reads.ui.presentation.components.SpaceSmall
+import com.otienosamwel.reads.ui.presentation.components.ImageView
 import com.otienosamwel.reads.ui.theme.ReadsTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -24,7 +20,6 @@ import com.otienosamwel.reads.ui.theme.ReadsTheme
 fun Home(navController: NavController?) {
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarScrollState())
-
 
     Scaffold(
         modifier = Modifier
@@ -39,15 +34,12 @@ fun Home(navController: NavController?) {
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Section()
-            SpaceMedium()
-            Section()
-            SpaceMedium()
-            Section()
-            SpaceMedium()
-            Section()
-            SpaceMedium()
-            Section()
+            ImageView(
+                size = 200.dp,
+                imageResource = "http://books.google.com/books/content?id=5wvnwQEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
+            ) {
+
+            }
         }
 
     }
@@ -72,34 +64,34 @@ fun HomePreview() {
     }
 }
 
-@Preview
-@Composable
-fun Section() {
-    Column(
-        modifier = Modifier
-            .padding(10.dp)
-            .fillMaxWidth(), horizontalAlignment = Alignment.Start
-    ) {
-        Text(
-            text = "Section Title",
-            modifier = Modifier.padding(start = 5.dp),
-            style = MaterialTheme.typography.labelLarge
-        )
-
-        SpaceSmall()
-
-        LazyRow(
-            contentPadding = PaddingValues(horizontal = 5.dp),
-            horizontalArrangement = Arrangement.spacedBy(20.dp)
-        ) {
-            items(20) {
-                BookItem(
-                    book = Book(
-                        name = "The tombs of Atuan",
-                        author = "Patrick Rothfuss"
-                    ), onAuthorClick = {}, onCoverClick = {}
-                )
-            }
-        }
-    }
-}
+//@Preview
+//@Composable
+//fun Section() {
+//    Column(
+//        modifier = Modifier
+//            .padding(10.dp)
+//            .fillMaxWidth(), horizontalAlignment = Alignment.Start
+//    ) {
+//        Text(
+//            text = "Section Title",
+//            modifier = Modifier.padding(start = 5.dp),
+//            style = MaterialTheme.typography.labelLarge
+//        )
+//
+//        SpaceSmall()
+//
+//        LazyRow(
+//            contentPadding = PaddingValues(horizontal = 5.dp),
+//            horizontalArrangement = Arrangement.spacedBy(20.dp)
+//        ) {
+//            items(20) {
+//                BookItem(
+//                    book = Book(
+//                        name = "The tombs of Atuan",
+//                        author = "Patrick Rothfuss"
+//                    ), onAuthorClick = {}, onCoverClick = {}
+//                )
+//            }
+//        }
+//    }
+//}

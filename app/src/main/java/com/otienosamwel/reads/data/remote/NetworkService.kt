@@ -2,6 +2,7 @@ package com.otienosamwel.reads.data.remote
 
 import android.content.Context
 import com.otienosamwel.reads.R
+import com.otienosamwel.reads.data.model.SearchResult
 import com.otienosamwel.reads.utils.Preferences
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.*
@@ -26,6 +27,8 @@ class NetworkService @Inject constructor(
     private val preferences: Preferences, @ApplicationContext private val context: Context
 ) {
     private val baseUrl = context.getString(R.string.base_url)
+
+    private val googleBooksBaseUrl = "https://www.googleapis.com/books/v1/volumes"
 
 
     /**
@@ -178,6 +181,30 @@ class NetworkService @Inject constructor(
             SignUpResponse(hasError = true)
         }
     }
+
+
+    suspend fun searchBooks(query: String, startIndex: Int = 0): SearchResponse =
+        withContext(Dispatchers.IO) {
+            return@withContext try {
+                val httpResponse = client.get(googleBooksBaseUrl) {
+                    parameter("q", query)
+                    parameter("maxResults", 40)
+                    parameter("startIndex", startIndex)
+                }
+
+                if (httpResponse.status == HttpStatusCode.OK) {
+                    val result = httpResponse.body<SearchResult>()
+
+                    SearchResponse(false, null, result)
+                } else {
+                    throw Exception(httpResponse.status.toString())
+                }
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+                SearchResponse(true, errorMessage = e.message, null)
+            }
+        }
 
 
     /**

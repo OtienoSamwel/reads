@@ -9,8 +9,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AccountCircle
 import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.ripple.LocalRippleTheme
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -25,10 +25,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.otienosamwel.reads.ui.presentation.features.account.Account
+import com.otienosamwel.reads.ui.presentation.features.collections.Collections
+import com.otienosamwel.reads.ui.presentation.features.discover.Discover
 import com.otienosamwel.reads.ui.presentation.features.home.Home
 import com.otienosamwel.reads.ui.theme.ReadsTheme
 import com.otienosamwel.reads.utils.ClearRippleTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,18 +52,18 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Navigation() {
-    val navController = rememberNavController()
-    Scaffold(modifier = Modifier.fillMaxSize(), bottomBar = { BottomNav(navController) })
+    val mainNavController = rememberNavController()
+    Scaffold(modifier = Modifier.fillMaxSize(), bottomBar = { BottomNav(mainNavController) })
     { scaffoldPaddingValues ->
         NavHost(
-            navController,
-            startDestination = Screens.Home.route,
+            mainNavController,
+            startDestination = Screens.Discover.route,
             modifier = Modifier.padding(scaffoldPaddingValues)
         ) {
-            composable(route = Screens.Home.route) { Home(navController = navController) }
-            composable(route = Screens.Feed.route) {}
-            composable(route = Screens.Account.route) {}
-            composable(route = Screens.Collections.route) {}
+            composable(route = Screens.Home.route) { Home(navController = mainNavController) }
+            composable(route = Screens.Discover.route) { Discover() }
+            composable(route = Screens.Account.route) { Account() }
+            composable(route = Screens.Collections.route) { Collections() }
         }
     }
 }
@@ -93,10 +98,10 @@ fun BottomNav(navController: NavController) {
 
 private sealed class Screens(val route: String, val name: String, val Icon: ImageVector?) {
     object Home : Screens("home", "Home", Icons.Rounded.Home)
-    object Feed : Screens("feed", "Feed", Icons.Rounded.Favorite)
+    object Discover : Screens("discover", "Discover", Icons.Rounded.Search)
     object Account : Screens("account", "Account", Icons.Rounded.AccountCircle)
     object Collections : Screens("collections", "Collections", Icons.Rounded.Add)
 }
 
 private val bottomNavScreens =
-    listOf(Screens.Home, Screens.Feed, Screens.Collections, Screens.Account)
+    listOf(Screens.Home, Screens.Discover, Screens.Collections, Screens.Account)
