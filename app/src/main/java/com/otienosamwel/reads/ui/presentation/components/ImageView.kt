@@ -36,7 +36,7 @@ fun ImageView(size: Dp, imageResource: String, onClick: () -> Unit) {
         },
         modifier = Modifier
             .width(size)
-            .height(size)
+            .wrapContentHeight()
             .clip(RoundedCornerShape(3.dp))
             .clickable(enabled = true, onClick = onClick),
     )
