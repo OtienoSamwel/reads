@@ -13,14 +13,14 @@ jobs:
           name: "Populate the properties file with environment variables"
           command: echo client.id=${CLIENT_ID} >> ./local.properties ; echo base.url=${BASE_URL} >> ./local.properties
 
-      -run:
-        name: "Show contents of properties file"
-        command: echo cat ./local.properties
+      - run:
+          name: "Show contents of properties file"
+          command: echo cat ./local.properties
 
-      -run:
-        name: "Fetch all android dependencies"
-        command: ./gradlew androidDependencies
+      - run:
+          name: "Fetch all android dependencies"
+          command: ./gradlew androidDependencies
 
-      -run:
-        name: "Build the application bundle"
-        command: ./gradlew assembleDebug
+      - run:
+          name: "Build the application bundle"
+          command: ./gradlew assembleDebug
