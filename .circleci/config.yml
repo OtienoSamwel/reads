@@ -15,7 +15,7 @@ jobs:
 
       - run:
           name: "Show contents of properties file"
-          command: echo cat ./local.properties
+          command: cat ./local.properties
 
       - run:
           name: "Fetch all android dependencies"
