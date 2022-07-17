@@ -34,12 +34,6 @@ fun Home(navController: NavController?) {
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            ImageView(
-                size = 200.dp,
-                imageResource = "http://books.google.com/books/content?id=5wvnwQEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api"
-            ) {
-
-            }
         }
 
     }
