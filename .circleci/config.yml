@@ -5,5 +5,12 @@ jobs:
       - image: cimg/android:2022.06
     steps:
       - checkout
+      - run:
+          name: "Create the properties file"
+          command: touch ./local.properties
+
+      - run:
+          name: "Populate the properties file with environment variables"
+          command: echo client.id=${CLIENT_ID} >> ./local.properties ; echo base.url=${BASE_URL} >> ./local.properties
+
       - run: ./gradlew androidDependencies
-      - run: ./gradlew lint test
