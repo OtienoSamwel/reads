@@ -121,7 +121,7 @@ class NetworkService @Inject constructor(
                     HttpStatusCode.Unauthorized -> {
                         SignInResponse(
                             hasError = true,
-                            errorMessage = "Incorrect password provided."
+                            errorMessage = "Incorrect credentials provided."
                         )
                     }
                     else -> {
@@ -130,6 +130,7 @@ class NetworkService @Inject constructor(
                 }
 
             } catch (e: Exception) {
+                e.printStackTrace()
                 SignInResponse(hasError = true)
             }
         }
@@ -205,10 +206,4 @@ class NetworkService @Inject constructor(
                 SearchResponse(true, errorMessage = e.message, null)
             }
         }
-
-
-    /**
-     * kills the client when the apps on destroy is called
-     */
-    fun closeClient() = client.close()
 }
