@@ -54,4 +54,8 @@ class Preferences @Inject constructor(@ApplicationContext context: Context) {
             putBoolean(HAS_SEEN_ON_BOARDING_KEY, true)
         }
     }
+
+    fun clearPreferences() {
+        preferences.edit().clear().apply()
+    }
 }

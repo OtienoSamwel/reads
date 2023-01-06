@@ -15,10 +15,7 @@ import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.api.ApiException
 import com.otienosamwel.reads.R
-import com.otienosamwel.reads.ui.presentation.features.auth.signIn.Login
-import com.otienosamwel.reads.ui.presentation.features.auth.signIn.SignUp
 import com.otienosamwel.reads.ui.theme.ReadsTheme
 import com.otienosamwel.reads.utils.Preferences
 import dagger.hilt.android.AndroidEntryPoint
@@ -32,9 +29,10 @@ class AuthActivity : ComponentActivity() {
 
     private val authViewModel: AuthViewModel by viewModels()
     private lateinit var googleSignInClient: GoogleSignInClient
+
     private val googleSignInResultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            try {
+            kotlin.runCatching {
                 val task = GoogleSignIn.getSignedInAccountFromIntent(it.data)
                 val idToken = task.result.idToken
                 idToken?.let { token ->
@@ -42,11 +40,10 @@ class AuthActivity : ComponentActivity() {
                     authViewModel.singInWithGoogle(token, this)
                 }
 
-            } catch (e: ApiException) {
-                e.printStackTrace()
+            }.onFailure {
+                it.printStackTrace()
             }
         }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,7 +81,7 @@ fun AuthNavigation(signInWithGoogle: () -> Unit) {
 
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = "Login") {
+    NavHost(navController = navController, startDestination = AuthScreens.Login.route) {
         composable(AuthScreens.Login.route) {
             Login(navController = navController, signInWithGoogle = signInWithGoogle)
         }
@@ -94,10 +91,15 @@ fun AuthNavigation(signInWithGoogle: () -> Unit) {
                 signInWithGoogle = signInWithGoogle
             )
         }
+
+        composable(AuthScreens.PasswordRest.route) {
+            PasswordRest(navController = navController)
+        }
     }
 }
 
 sealed class AuthScreens(val route: String) {
-    object Login : AuthScreens(route = "Login")
-    object Register : AuthScreens(route = "Register")
+    object Login : AuthScreens(route = "login")
+    object Register : AuthScreens(route = "register")
+    object PasswordRest : AuthScreens(route = "password_reset")
 }

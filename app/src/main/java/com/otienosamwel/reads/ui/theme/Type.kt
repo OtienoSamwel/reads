@@ -102,7 +102,7 @@ val Typography = Typography(
     labelSmall = TextStyle(
         fontFamily = Nunito,
         fontWeight = FontWeight.Medium,
-        fontSize = 12.sp,
+        fontSize = 10.sp,
         lineHeight = 20.sp,
         letterSpacing = 0.5.sp
     ),

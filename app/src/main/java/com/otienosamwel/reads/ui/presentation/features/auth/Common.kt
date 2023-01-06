@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.dsc.form_builder.TextFieldState
 import com.otienosamwel.reads.R
 import com.otienosamwel.reads.ui.presentation.components.LoginButton
 import com.otienosamwel.reads.ui.presentation.components.Sizes
@@ -64,16 +65,17 @@ fun Or() {
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PasswordField(state: LoginState) {
+fun PasswordField(state: TextFieldState) {
 
     var passwordVisible by remember { mutableStateOf(false) }
 
     OutlinedTextField(
-        value = state.password,
+        value = state.value,
         label = { Text(text = "Password") },
-        onValueChange = { state.passwordChanged(it) },
-        isError = state.passwordHasError,
+        onValueChange = { state.change(it) },
+        isError = state.hasError,
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Password, imeAction = ImeAction.Done
         ),
@@ -86,7 +88,7 @@ fun PasswordField(state: LoginState) {
             IconButton(onClick = { passwordVisible = !passwordVisible }) {
                 Icon(painterResource(id = imageIcon), contentDescription = null)
             }
-        }
+        }, maxLines = 1
     )
 }
 
@@ -109,6 +111,21 @@ fun LoadingButtonAnimation() {
         modifier = Modifier
             .padding(0.dp)
             .size(24.dp)
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun EmailField(state: TextFieldState) {
+    OutlinedTextField(
+        value = state.value,
+        label = { Text(text = "Email") },
+        onValueChange = { state.change(it) },
+        isError = state.hasError,
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Email, imeAction = ImeAction.Next
+        ),
+        modifier = Modifier.fillMaxWidth(), maxLines = 1
     )
 }
 

@@ -1,4 +1,4 @@
-package com.otienosamwel.reads.ui.presentation.features.auth.signIn
+package com.otienosamwel.reads.ui.presentation.features.auth
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
@@ -21,12 +21,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.dsc.form_builder.TextFieldState
 import com.otienosamwel.reads.R
 import com.otienosamwel.reads.ui.presentation.components.SpaceLarge
 import com.otienosamwel.reads.ui.presentation.components.SpaceMedium
 import com.otienosamwel.reads.ui.presentation.components.SpaceSmall
-import com.otienosamwel.reads.ui.presentation.features.auth.AuthScreens
-import com.otienosamwel.reads.ui.presentation.features.auth.AuthViewModel
+import com.otienosamwel.reads.ui.presentation.features.auth.signIn.*
 import com.otienosamwel.reads.ui.theme.ReadsTheme
 
 @Composable
@@ -34,6 +34,14 @@ fun SignUp(navController: NavController, signInWithGoogle: () -> Unit) {
     val scrollState = rememberScrollState()
     val authViewModel: AuthViewModel = hiltViewModel()
     val state = authViewModel.signUpState
+
+    val emailState = state.getState<TextFieldState>(name = SignUpStateConstants.EMAIL_STATE)
+    val firstNameState =
+        state.getState<TextFieldState>(name = SignUpStateConstants.FIRST_NAME_STATE)
+    val lastNameState = state.getState<TextFieldState>(name = SignUpStateConstants.LAST_NAME_STATE)
+    val passwordState = state.getState<TextFieldState>(name = SignUpStateConstants.PASSWORD_STATE)
+    val confirmPasswordState =
+        state.getState<TextFieldState>(name = SignUpStateConstants.PASSWORD_CONFIRM_STATE)
 
     Column(
         modifier = Modifier
@@ -55,28 +63,28 @@ fun SignUp(navController: NavController, signInWithGoogle: () -> Unit) {
         )
 
         SpaceMedium()
-        FirstNameFiled(state = state)
-        if (state.firstNameHasError) ErrorMessage(message = "first name is required")
+        FirstNameFiled(state = firstNameState)
+        if (firstNameState.hasError) ErrorMessage(message = "first name is required")
 
         SpaceSmall()
 
-        LastNameField(state = state)
-        if (state.lastNameHasError) ErrorMessage(message = "last name is required")
+        LastNameField(state = lastNameState)
+        if (lastNameState.hasError) ErrorMessage(message = "last name is required")
 
         SpaceSmall()
 
-        EmailField(state = state)
-        if (state.emailHasError) ErrorMessage(message = "email not valid")
+        EmailField(state = emailState)
+        if (emailState.hasError) ErrorMessage(message = "email not valid")
 
         SpaceSmall()
 
-        ChoosePasswordField(state = state, "Choose password")
-        if (state.passwordHasError) ErrorMessage(message = "password not valid")
+        ChoosePasswordField(state = passwordState, "Choose password")
+        if (passwordState.hasError) ErrorMessage(message = "password not valid")
 
         SpaceSmall()
 
-        ConfirmPasswordFiled(state = state, "Confirm password")
-        if (state.passwordConfirmationError) ErrorMessage(message = "passwords don't match")
+        ConfirmPasswordFiled(state = confirmPasswordState, "Confirm password")
+        if (confirmPasswordState.hasError) ErrorMessage(message = "passwords don't match")
 
         SpaceMedium()
 
@@ -96,17 +104,18 @@ fun SignUp(navController: NavController, signInWithGoogle: () -> Unit) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChoosePasswordField(state: SignUpState, label: String) {
+fun ChoosePasswordField(state: TextFieldState, label: String) {
 
     var passwordVisible by remember { mutableStateOf(false) }
 
-    OutlinedTextField(value = state.password,
+    OutlinedTextField(value = state.value,
         label = { Text(text = label) },
-        onValueChange = { state.passwordChanged(it) },
-        isError = state.passwordHasError,
+        onValueChange = { state.change(it) },
+        isError = state.hasError,
         keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Password, imeAction = ImeAction.Done
+            keyboardType = KeyboardType.Password, imeAction = ImeAction.Next
         ),
         modifier = Modifier.fillMaxWidth(),
         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
@@ -121,15 +130,16 @@ fun ChoosePasswordField(state: SignUpState, label: String) {
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ConfirmPasswordFiled(state: SignUpState, label: String) {
+fun ConfirmPasswordFiled(state: TextFieldState, label: String) {
 
     var passwordVisible by remember { mutableStateOf(false) }
 
-    OutlinedTextField(value = state.passwordConfirmation,
+    OutlinedTextField(value = state.value,
         label = { Text(text = label) },
-        onValueChange = { state.passwordConfirmationChanged(it) },
-        isError = state.passwordConfirmationError,
+        onValueChange = { state.change(it) },
+        isError = state.hasError,
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Password, imeAction = ImeAction.Done
         ),
@@ -163,7 +173,7 @@ fun SingUpButton(viewModel: AuthViewModel, navController: NavController) {
     val context = LocalContext.current
     OutlinedButton(
         onClick = {
-            if (viewModel.signUpState.validate() && !viewModel.signUpState.isSignupLoading) {
+            if (viewModel.signUpState.validate() && !viewModel.isLoading.value) {
                 viewModel.signUp(context) {
                     navController.navigate(AuthScreens.Login.route)
                 }
@@ -171,33 +181,19 @@ fun SingUpButton(viewModel: AuthViewModel, navController: NavController) {
         },
         modifier = Modifier.fillMaxWidth(),
     ) {
-        if (viewModel.signUpState.isSignupLoading) LoadingButtonAnimation()
-        if (!viewModel.signUpState.isSignupLoading) Text(text = "Sign up")
+        if (viewModel.isLoading.value) LoadingButtonAnimation()
+        if (!viewModel.isLoading.value) Text(text = "Sign up")
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EmailField(state: SignUpState) {
+fun FirstNameFiled(state: TextFieldState) {
     OutlinedTextField(
-        value = state.email,
-        label = { Text(text = "Email") },
-        onValueChange = { state.emailChanged(it) },
-        isError = state.emailHasError,
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Email, imeAction = ImeAction.Next
-        ),
-        modifier = Modifier.fillMaxWidth()
-
-    )
-}
-
-@Composable
-fun FirstNameFiled(state: SignUpState) {
-    OutlinedTextField(
-        value = state.firstName,
+        value = state.value,
         label = { Text(text = "First name") },
-        onValueChange = { state.firstNameChanged(it) },
-        isError = state.firstNameHasError,
+        onValueChange = { state.change(it) },
+        isError = state.hasError,
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Text, imeAction = ImeAction.Next
         ),
@@ -206,13 +202,14 @@ fun FirstNameFiled(state: SignUpState) {
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LastNameField(state: SignUpState) {
+fun LastNameField(state: TextFieldState) {
     OutlinedTextField(
-        value = state.lastName,
+        value = state.value,
         label = { Text(text = "Last name") },
-        onValueChange = { state.lastNameChanged(it) },
-        isError = state.lastNameHasError,
+        onValueChange = { state.change(it) },
+        isError = state.hasError,
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Text, imeAction = ImeAction.Next
         ),

@@ -2,12 +2,14 @@
 buildscript {
     ext.kotlin_version = "1.6.10"
     ext.hilt_version = '2.40.1'
-    ext.room_version = "2.4.2"
-    ext.ktor_version = "2.0.0"
+    ext.room_version = "2.4.3"
+    ext.ktor_version = "2.1.1"
 
     repositories {
         google()
         mavenCentral()
+
+
 
         //hilt
         maven {
@@ -16,10 +18,10 @@ buildscript {
                 includeModule("com.google.dagger", "hilt-android-gradle-plugin")
             }
         }
-        maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
     }
+
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.2.1'
+        classpath 'com.android.tools.build:gradle:7.3.1'
         classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10'
 
         //hilt
@@ -31,6 +33,9 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+
+        //jitpack
+        maven { url "https://jitpack.io" }
     }
 }
 

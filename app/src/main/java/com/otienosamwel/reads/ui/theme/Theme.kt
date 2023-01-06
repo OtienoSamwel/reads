@@ -20,14 +20,18 @@ val Pink40 = Color(0xFF7D5260)
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
     secondary = PurpleGrey80,
-    tertiary = Pink80
+    tertiary = Pink80,
+    background = Color.Black,
+    onBackground = Color.White
 )
 
 private val LightColorScheme = lightColorScheme(
     primary = Purple40,
     secondary = PurpleGrey40,
     tertiary = Pink40,
-    onPrimary = Color.White
+    onPrimary = Color.White,
+    background = Color.White,
+    onBackground = Color.Black
 )
 
 @Composable

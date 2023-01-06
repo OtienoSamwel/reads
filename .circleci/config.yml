@@ -11,7 +11,7 @@ jobs:
 
       - run:
           name: "Populate the properties file with environment variables"
-          command: echo client.id=${CLIENT_ID} >> ./local.properties ; echo base.url=${BASE_URL} >> ./local.properties
+          command: echo client.id=${CLIENT_ID} >> ./local.properties ; echo base.url=${BASE_URL} >> ./local.properties echo api.key=${API_KEY} >> ./local.properties
 
       - run:
           name: "Show contents of properties file"

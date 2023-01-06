@@ -1,52 +1,63 @@
 package com.otienosamwel.reads.data.remote
 
+import com.google.gson.annotations.SerializedName
 import com.otienosamwel.reads.data.model.SearchResult
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import com.otienosamwel.reads.data.model.User
 
-@Serializable
+
 data class TokenInfo(
-    @SerialName("token") val accessToken: String?,
-    @SerialName("expires") val expiresIn: Int?,
-    @SerialName("refresh_token") val refreshToken: String? = null,
+    @SerializedName("token") val accessToken: String?,
+    @SerializedName("expires") val expiresIn: Int?,
+    @SerializedName("refresh_token") val refreshToken: String? = null,
 )
 
-@Serializable
 data class TokenRequest(
-    @SerialName("email") val email: String,
-    @SerialName("password") val password: String,
+    @SerializedName("email") val email: String,
+    @SerializedName("password") val password: String
 )
 
-@Serializable
 data class TokenRequestGoogle(
-    @SerialName("id_token") val idToken: String,
+    @SerializedName("id_token") val idToken: String,
 )
 
-@Serializable
 data class SignUpRequest(
-    val firstName: String,
-    val lastName: String,
+    @SerializedName("first_name") val firstName: String,
+    @SerializedName("last_name") val lastName: String,
     val email: String,
-    val password: String,
+    val password1: String,
+    val password2: String,
+    val username: String
 )
 
 data class SignUpResponse(
-    val hasError: Boolean,
-    val errorMessage: String? = null
+    @SerializedName("access_token") val accessToken: String,
+    @SerializedName("refresh_token") val refreshToken: String,
+    val user: User
 )
 
 data class SignInResponse(
-    val hasError: Boolean,
-    val errorMessage: String? = null
+    @SerializedName("access_token") val accessToken: String,
+    @SerializedName("refresh_token") val refreshToken: String,
+    val user: User
 )
 
-data class SignInWithGoogleResponse(
-    val hasError: Boolean,
-    val errorMessage: String? = null
+data class PasswordResetResponse(
+    val test  : String
 )
+
 
 data class SearchResponse(
     val hasError: Boolean,
     val errorMessage: String? = "There was an error performing that request.",
     val result: SearchResult?
+)
+
+data class GenreSearchResponse(
+    val hasError: Boolean,
+    val errorMessage: String? = "A network error occurred",
+    val result: SearchResult?
+)
+
+data class PasswordResetBody(
+    val email: String
 )

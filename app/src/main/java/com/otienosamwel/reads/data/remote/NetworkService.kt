@@ -1,32 +1,30 @@
 package com.otienosamwel.reads.data.remote
 
 import android.content.Context
+import android.net.Uri
 import com.otienosamwel.reads.R
 import com.otienosamwel.reads.data.model.SearchResult
 import com.otienosamwel.reads.utils.Preferences
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.*
 import io.ktor.client.call.*
+import io.ktor.client.engine.android.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.*
-import io.ktor.client.plugins.auth.*
-import io.ktor.client.plugins.auth.providers.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.logging.*
 import io.ktor.client.request.*
 import io.ktor.http.*
-import io.ktor.serialization.kotlinx.json.*
+import io.ktor.serialization.gson.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
-
 class NetworkService @Inject constructor(
-    private val preferences: Preferences, @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context
 ) {
     private val baseUrl = context.getString(R.string.base_url)
+    private val booksUrlApiKey = context.getString(R.string.api_key)
 
     private val googleBooksBaseUrl = "https://www.googleapis.com/books/v1/volumes"
 
@@ -34,9 +32,7 @@ class NetworkService @Inject constructor(
     /**
      * This client is only used for authentication requests
      */
-    @OptIn(ExperimentalSerializationApi::class)
-    private val tokenClient = HttpClient(CIO) {
-
+    private val tokenClient = HttpClient(Android) {
         expectSuccess = false
 
         defaultRequest {
@@ -44,16 +40,15 @@ class NetworkService @Inject constructor(
         }
 
         install(ContentNegotiation) {
-            json(Json {
-                isLenient = true
-                prettyPrint = true
-                ignoreUnknownKeys = true
-                explicitNulls = false
-            })
+            gson {
+                setLenient()
+                setPrettyPrinting()
+                serializeNulls()
+            }
         }
 
         install(Logging) {
-            level = LogLevel.ALL
+            level = LogLevel.BODY
             logger = Logger.DEFAULT
         }
     }
@@ -61,9 +56,7 @@ class NetworkService @Inject constructor(
     /**
      * This client is used for all other requests
      */
-    @OptIn(ExperimentalSerializationApi::class)
     private val client = HttpClient(CIO) {
-
         expectSuccess = false
 
         defaultRequest {
@@ -71,25 +64,16 @@ class NetworkService @Inject constructor(
         }
 
         install(ContentNegotiation) {
-            json(Json {
-                isLenient = true
-                prettyPrint = true
-                ignoreUnknownKeys = true
-                explicitNulls = false
-            })
+            gson {
+                setPrettyPrinting()
+                setLenient()
+                serializeNulls()
+            }
         }
 
         install(Logging) {
-            level = LogLevel.ALL
-            logger = Logger.ANDROID
-        }
-
-        install(Auth) {
-            bearer {
-                loadTokens {
-                    BearerTokens(preferences.getToken()!!, preferences.getRefreshToken()!!)
-                }
-            }
+            level = LogLevel.BODY
+            logger = Logger.DEFAULT
         }
     }
 
@@ -98,89 +82,41 @@ class NetworkService @Inject constructor(
      * @param email the user's registered email
      * @param password the user's password
      */
-    suspend fun getInitialTokenInfo(email: String, password: String): SignInResponse =
+    suspend fun login(email: String, password: String): SignInResponse {
+        return tokenClient.post("$baseUrl/api-auth/login") {
+            setBody(
+                TokenRequest(
+                    email = email,
+                    password = password,
+                )
+            )
+        }.body()
+    }
+
+
+    suspend fun getInitialTokenInfoGoogle(googleIdToken: String): SignUpResponse =
         withContext(Dispatchers.IO) {
-            return@withContext try {
-                val httpResponse = tokenClient.post("$baseUrl/user/login") {
-                    setBody(
-                        TokenRequest(
-                            email = email,
-                            password = password,
-                        )
-                    )
-                }
-
-                when (httpResponse.status) {
-                    HttpStatusCode.OK -> {
-                        httpResponse.body<TokenInfo>().also { tokenInfo ->
-                            preferences.setToken(tokenInfo.accessToken!!)
-
-                        }
-                        SignInResponse(hasError = false)
-                    }
-                    HttpStatusCode.Unauthorized -> {
-                        SignInResponse(
-                            hasError = true,
-                            errorMessage = "Incorrect credentials provided."
-                        )
-                    }
-                    else -> {
-                        throw Exception(httpResponse.toString())
-                    }
-                }
-
-            } catch (e: Exception) {
-                e.printStackTrace()
-                SignInResponse(hasError = true)
-            }
-        }
-
-    suspend fun getInitialTokenInfoGoogle(googleIdToken: String): SignInWithGoogleResponse =
-        withContext(Dispatchers.IO) {
-            return@withContext try {
-                val httpResponse = tokenClient.post("$baseUrl/user/google_sign_in") {
-                    setBody(
-                        TokenRequestGoogle(idToken = googleIdToken)
-                    )
-                }
-
-                if (httpResponse.status == HttpStatusCode.OK) {
-                    httpResponse.body<TokenInfo>().also { tokenInfo ->
-                        preferences.setToken(tokenInfo.accessToken!!)
-                    }
-                    SignInWithGoogleResponse(hasError = false)
-                } else {
-                    throw Exception(httpResponse.toString())
-                }
-
-            } catch (e: Exception) {
-                SignInWithGoogleResponse(hasError = true)
-            }
+            return@withContext tokenClient.post("$baseUrl/users/google") {
+                setBody(TokenRequestGoogle(idToken = googleIdToken))
+            }.body()
         }
 
 
     suspend fun signUpUserWithEmail(
         firstName: String, lastname: String, email: String, password: String
     ): SignUpResponse = withContext(Dispatchers.IO) {
-        return@withContext try {
-            val httpResponse = client.post("$baseUrl/user/signup") {
-                setBody(
-                    SignUpRequest(
-                        firstName = firstName,
-                        lastName = lastname,
-                        email = email,
-                        password = password,
-                    )
+        return@withContext client.post("$baseUrl/api-auth/registration") {
+            setBody(
+                SignUpRequest(
+                    firstName = firstName,
+                    lastName = lastname,
+                    email = email,
+                    password1 = password,
+                    password2 = password,
+                    username = email
                 )
-            }
-            if (httpResponse.status == HttpStatusCode.Created) {
-                SignUpResponse(hasError = false)
-            } else {
-                throw Exception(httpResponse.status.toString())
-            }
-        } catch (e: Exception) {
-            SignUpResponse(hasError = true)
-        }
+            )
+        }.body()
     }
 
 
@@ -191,10 +127,22 @@ class NetworkService @Inject constructor(
                     parameter("q", query)
                     parameter("maxResults", 40)
                     parameter("startIndex", startIndex)
+                    parameter("orderBy", "relevance")
+                    parameter("printType", "books")
+                    //  parameter("key", booksUrlApiKey)
                 }
 
                 if (httpResponse.status == HttpStatusCode.OK) {
                     val result = httpResponse.body<SearchResult>()
+
+
+                    //make all image links https
+                    result.items?.forEach { item ->
+                        item.volumeInfo?.imageLinks?.thumbnail?.let {
+                            item.volumeInfo.imageLinks.thumbnail =
+                                Uri.parse(it).buildUpon().scheme("https").build().toString()
+                        }
+                    }
 
                     SearchResponse(false, null, result)
                 } else {
@@ -206,4 +154,56 @@ class NetworkService @Inject constructor(
                 SearchResponse(true, errorMessage = e.message, null)
             }
         }
+
+    suspend fun getBooksByGenre(genre: String, startIndex: Int = 0): GenreSearchResponse =
+        withContext(Dispatchers.IO) {
+
+            val query = "subject:\"$genre\""
+
+            return@withContext try {
+                val httpResponse = client.get(googleBooksBaseUrl) {
+                    parameter("q", query)
+                    parameter("maxResults", 20)
+                    parameter("startIndex", startIndex)
+                    parameter("orderBy", "relevance")
+                    parameter("printType", "books")
+                    //  parameter("key", booksUrlApiKey)
+                }
+
+                if (httpResponse.status == HttpStatusCode.OK) {
+                    val result = httpResponse.body<SearchResult>()
+
+                    //make all image links https
+                    result.items?.forEach { item ->
+                        item.volumeInfo?.imageLinks?.thumbnail?.let {
+                            item.volumeInfo.imageLinks.thumbnail =
+                                Uri.parse(it).buildUpon().scheme("https").build().toString()
+                        }
+                    }
+
+                    GenreSearchResponse(hasError = false, result = result)
+                } else {
+                    throw Exception(httpResponse.status.toString())
+                }
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+                GenreSearchResponse(hasError = true, errorMessage = e.message, result = null)
+            }
+        }
+
+
+    suspend fun passwordReset(email: String) {
+        client.post("$baseUrl/api-auth/password/reset") {
+            setBody(
+                PasswordResetBody(
+                    email = email
+                )
+            )
+        }
+    }
+
+    companion object {
+        private const val TAG = "NETWORK_SERVICE"
+    }
 }

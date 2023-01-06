@@ -1,6 +1,7 @@
 package com.otienosamwel.reads.data.repository.search
 
 import com.otienosamwel.reads.data.model.SearchItem
+import com.otienosamwel.reads.data.remote.GenreSearchResponse
 import com.otienosamwel.reads.data.remote.SearchResponse
 import kotlinx.coroutines.flow.Flow
 
@@ -17,4 +18,6 @@ interface SearchRepository {
     fun getAllSearchItems(): Flow<List<SearchItem>>
 
     suspend fun performSearch(query: String): SearchResponse
+
+    suspend fun performGenreSearch(genre: String): GenreSearchResponse
 }

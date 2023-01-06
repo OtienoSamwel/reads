@@ -27,4 +27,10 @@ class ReadsDatabaseModule {
     fun provideSearchDao(readsDatabase: ReadsDatabase): SearchDao {
         return readsDatabase.getSearchDao()
     }
+
+    @Provides
+    @Singleton
+    fun provideUserDao(readsDatabase: ReadsDatabase): UserDao {
+        return readsDatabase.getUserDao()
+    }
 }

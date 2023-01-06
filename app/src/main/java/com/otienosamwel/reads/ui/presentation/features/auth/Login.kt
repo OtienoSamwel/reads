@@ -1,37 +1,40 @@
-package com.otienosamwel.reads.ui.presentation.features.auth.signIn
+package com.otienosamwel.reads.ui.presentation.features.auth
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.dsc.form_builder.TextFieldState
 import com.otienosamwel.reads.ui.presentation.components.SpaceLarge
 import com.otienosamwel.reads.ui.presentation.components.SpaceMedium
 import com.otienosamwel.reads.ui.presentation.components.SpaceSmall
-import com.otienosamwel.reads.ui.presentation.features.auth.AuthActivity
-import com.otienosamwel.reads.ui.presentation.features.auth.AuthScreens
-import com.otienosamwel.reads.ui.presentation.features.auth.AuthViewModel
+import com.otienosamwel.reads.ui.presentation.features.auth.signIn.*
+
 
 @Composable
 fun Login(navController: NavController, signInWithGoogle: () -> Unit) {
     val scrollState = rememberScrollState()
-
     val authViewModel: AuthViewModel = hiltViewModel()
+
+    //state
+    val emailState =
+        authViewModel.loginState.getState<TextFieldState>(AuthStateConstants.EMAIL_STATE)
+    val passwordState =
+        authViewModel.loginState.getState<TextFieldState>(AuthStateConstants.PASSWORD_STATE)
+
+
     Column(
         modifier = Modifier
             .padding(20.dp)
@@ -53,15 +56,25 @@ fun Login(navController: NavController, signInWithGoogle: () -> Unit) {
 
         SpaceMedium()
 
-        EmailField(state = authViewModel.loginState)
-        if (authViewModel.loginState.emailHasError) ErrorMessage(message = "email not valid")
+        EmailField(state = emailState)
+        if (emailState.hasError) ErrorMessage(message = "email not valid")
 
         SpaceSmall()
 
-        PasswordField(state = authViewModel.loginState)
-        if (authViewModel.loginState.passwordHasError) ErrorMessage(message = "password cannot be empty")
+        PasswordField(state = passwordState)
+        if (passwordState.hasError) ErrorMessage(message = "password cannot be empty")
 
         SpaceMedium()
+
+        Text(
+            "Forgot password?",
+            modifier = Modifier
+                .padding(8.dp)
+                .clickable {
+                    navController.navigate(AuthScreens.PasswordRest.route)
+                },
+            color = MaterialTheme.colorScheme.secondary
+        )
 
         SingInButton(viewModel = authViewModel)
 
@@ -86,34 +99,17 @@ fun SingInButton(viewModel: AuthViewModel) {
 
     OutlinedButton(
         onClick = {
-            if (viewModel.loginState.validate() && !viewModel.loginState.isLoginLoading) {
-                viewModel.signInWithEmail(
-                    viewModel.loginState.email,
-                    viewModel.loginState.password,
-                    context
-                )
+            if (!viewModel.isLoading.value) {
+                viewModel.signInWithEmail(context)
             }
         },
         modifier = Modifier.fillMaxWidth()
     ) {
-        if (!viewModel.loginState.isLoginLoading) Text(text = "Sign In")
-        if (viewModel.loginState.isLoginLoading) LoadingButtonAnimation()
+        if (!viewModel.isLoading.value) Text(text = "Sign In")
+        if (viewModel.isLoading.value) LoadingButtonAnimation()
     }
 }
 
-@Composable
-fun EmailField(state: LoginState) {
-    OutlinedTextField(
-        value = state.email,
-        label = { Text(text = "Email") },
-        onValueChange = { state.emailChanged(it) },
-        isError = state.emailHasError,
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Email, imeAction = ImeAction.Next
-        ),
-        modifier = Modifier.fillMaxWidth()
-    )
-}
 
 @Composable
 fun DoNotHaveAnAccount(navController: NavController) {

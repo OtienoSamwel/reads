@@ -46,7 +46,7 @@ fun Search(
     discoverNavController: NavController, discoverViewModel: DiscoverViewModel = hiltViewModel()
 ) {
     val searchResultItems = discoverViewModel.searchResponseItems.observeAsState()
-    val context = LocalContext.current
+
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -61,7 +61,9 @@ fun Search(
 
         searchResultItems.value?.items?.let { bookItems ->
 
-            LazyColumn(modifier = Modifier.fillMaxWidth()) {
+            LazyColumn(
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 items(bookItems) { bookItem ->
                     bookItem.volumeInfo?.imageLinks?.thumbnail?.let {
 
@@ -78,7 +80,7 @@ fun Search(
 }
 
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun MainSearchBar(discoverViewModel: DiscoverViewModel, discoverNavController: NavController) {
 
@@ -113,13 +115,14 @@ fun MainSearchBar(discoverViewModel: DiscoverViewModel, discoverNavController: N
                 })
         },
         trailingIcon = {
-            if (discoverViewModel.discoverState.searchQuery.isNotBlank() && discoverViewModel.discoverState.searchQuery.isNotEmpty())
-                Icon(
-                    imageVector = Icons.Rounded.Close,
-                    contentDescription = null,
-                    modifier = Modifier.clickable {
-                        discoverViewModel.discoverState.onSearchQueryChange("")
-                    })
+            if (discoverViewModel.discoverState.searchQuery.isNotBlank() &&
+                discoverViewModel.discoverState.searchQuery.isNotEmpty()
+            ) Icon(
+                imageVector = Icons.Rounded.Close,
+                contentDescription = null,
+                modifier = Modifier.clickable {
+                    discoverViewModel.discoverState.onSearchQueryChange("")
+                })
         },
         placeholder = {
             Text(text = "Search query")
@@ -163,14 +166,18 @@ fun SearchHistoryDropDown(discoverViewModel: DiscoverViewModel) {
 @Composable
 fun SearchDropDownItem(searchItem: SearchItem, discoverViewModel: DiscoverViewModel) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Start,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(20.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(imageVector = Icons.Rounded.Refresh, contentDescription = null)
+
         SpaceMedium()
-        Text(text = searchItem.searchQuery)
-        SpaceAbsolute()
+
+        Text(text = searchItem.searchQuery, modifier = Modifier.weight(1f))
+
         IconButton(onClick = { discoverViewModel.deleteSearchItem(searchItem) }) {
             Icon(imageVector = Icons.Rounded.Close, contentDescription = null)
         }
@@ -179,36 +186,49 @@ fun SearchDropDownItem(searchItem: SearchItem, discoverViewModel: DiscoverViewMo
 
 
 @Composable
-fun SearchItem(book: Item, coverLink: String, onCoverClick: () -> Unit, onAuthorClick: () -> Unit) {
+fun SearchItem(
+    book: Item,
+    coverLink: String,
+    onCoverClick: () -> Unit,
+    onAuthorClick: () -> Unit
+) {
     Row(
         modifier = Modifier
-            .padding(horizontal = 10.dp)
+            .padding(
+                horizontal = 10.dp,
+                vertical = 4.dp
+            )
             .fillMaxWidth()
-            .height(100.dp),
+            .wrapContentHeight(),
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically,
 
         ) {
 
-        ImageView(size = 50.dp, imageResource = coverLink, onClick = onCoverClick)
+        ImageView(
+            size = 90,
+            imageLink = coverLink,
+            onClick = onCoverClick
+        )
 
         Column(
             modifier = Modifier
-                .padding(10.dp)
-                .width(IntrinsicSize.Max),
+                .padding(horizontal = 10.dp)
+                .height(144.dp),
         ) {
             SpaceAbsolute()
 
             Text(
                 text = book.volumeInfo?.title ?: "Title unavailable",
-                style = MaterialTheme.typography.labelSmall,
+                style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.Bold
             )
 
             Text(
                 text = book.volumeInfo?.authors?.first() ?: "Author unavailable",
-                style = MaterialTheme.typography.labelSmall,
-                fontWeight = FontWeight.Black
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.Black,
+                modifier = Modifier.clickable { onAuthorClick() }
             )
 
             Text(
@@ -217,8 +237,6 @@ fun SearchItem(book: Item, coverLink: String, onCoverClick: () -> Unit, onAuthor
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis
             )
-
-            SpaceAbsolute()
         }
     }
 }

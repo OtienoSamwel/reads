@@ -28,6 +28,7 @@ fun Collections() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CollectionsTopAppBar() {
 

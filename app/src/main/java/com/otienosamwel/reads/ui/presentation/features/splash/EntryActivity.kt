@@ -18,8 +18,8 @@ class EntryActivity : ComponentActivity() {
     lateinit var preferences: Preferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
-        installSplashScreen()
 
         val activity =
             if (!preferences.getToken().isNullOrBlank()) {

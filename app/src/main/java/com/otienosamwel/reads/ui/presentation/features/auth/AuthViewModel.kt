@@ -2,106 +2,126 @@ package com.otienosamwel.reads.ui.presentation.features.auth
 
 import android.content.Context
 import android.content.Intent
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.otienosamwel.reads.data.repository.auth.AuthRepository
-import com.otienosamwel.reads.ui.presentation.features.auth.signIn.LoginState
-import com.otienosamwel.reads.ui.presentation.features.auth.signIn.SignUpState
+import com.otienosamwel.reads.domain.model.Resource
+import com.otienosamwel.reads.domain.useCases.LoginUseCase
+import com.otienosamwel.reads.domain.useCases.SignInWithGoogleUseCase
+import com.otienosamwel.reads.domain.useCases.SignUpUseCase
 import com.otienosamwel.reads.ui.presentation.features.main.MainActivity
 import com.otienosamwel.reads.utils.toast
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class AuthViewModel @Inject constructor(private val authRepository: AuthRepository) : ViewModel() {
+class AuthViewModel @Inject constructor(
+    private val signUpUseCase: SignUpUseCase,
+    private val singInWithGoogleUseCase: SignInWithGoogleUseCase,
+    private val loginUseCase: LoginUseCase
+) : ViewModel() {
 
-    val loginState = LoginState()
-    val signUpState = SignUpState()
+    val loginState = AuthState.loginState
+    val signUpState = AuthState.singUpState
+    val passwordResetState = AuthState.passwordResetState
+    val isLoading = mutableStateOf(false)
 
 
-    fun signInWithEmail(email: String, password: String, activity: AuthActivity) {
+    fun signInWithEmail(activity: AuthActivity) {
+
+        if (!loginState.validate()) {
+            return
+        }
+
+        val data = loginState.getData(LoginData::class)
+
         viewModelScope.launch {
-            loginState.isLoginLoading = true
-
-            val response =
-                withContext(Dispatchers.IO) { authRepository.signInUserWithEmail(email, password) }
-
-            loginState.isLoginLoading = false
-
-            if (!response.hasError) {
-                loginState.clearState()
-
-                //start activity on main thread
-                withContext(Dispatchers.Main) {
-                    activity.startActivity(Intent(activity, MainActivity::class.java))
-                    activity.finish()
+            loginUseCase(email = data.email, password = data.password).collect { resource ->
+                when (resource) {
+                    is Resource.Loading -> isLoading.value = true
+                    is Resource.Error -> {
+                        isLoading.value = false
+                        activity.toast("Could not sign you in at the moment. Please try again later ")
+                    }
+                    is Resource.Success -> {
+                        activity.startActivity(Intent(activity, MainActivity::class.java))
+                    }
                 }
-
-            } else {
-
-                if (response.errorMessage != null) {
-                    activity.toast(response.errorMessage)
-                } else {
-                    activity.toast("There was an error signing in. Please try again later")
-                }
-
             }
-
         }
     }
 
     fun singInWithGoogle(googleIdToken: String, activity: AuthActivity) {
         viewModelScope.launch {
-
-            loginState.isGoogleLoginLoading = true
-            val response =
-                withContext(Dispatchers.IO) { authRepository.signInUserWithGoogle(googleIdToken) }
-
-            loginState.isGoogleLoginLoading = false
-
-            if (!response.hasError) {
-                loginState.clearState()
-                signUpState.clearState()
-
-                withContext(Dispatchers.Main) {
-                    activity.startActivity(Intent(activity, MainActivity::class.java))
-                    activity.finish()
-                }
-            } else {
-                if (response.errorMessage != null) {
-                    activity.toast(response.errorMessage)
-                } else {
-                    activity.toast("There was an error signing in. Please try again later")
+            singInWithGoogleUseCase(googleIdToken).collect { resource ->
+                when (resource) {
+                    is Resource.Loading -> {
+                        isLoading.value = true
+                    }
+                    is Resource.Success -> {
+                        isLoading.value = false
+                        activity.startActivity(Intent(activity, MainActivity::class.java))
+                    }
+                    is Resource.Error -> {
+                        isLoading.value = false
+                        activity.toast(resource.message.toString())
+                    }
                 }
             }
         }
     }
 
     fun signUp(context: Context, navigateToSignInScreen: () -> Unit) {
+        if (!signUpState.validate()) {
+            return
+        }
+        val data = signUpState.getData(SignUpData::class)
+
         viewModelScope.launch {
-
-            signUpState.isSignupLoading = true
-
-            val response = withContext(Dispatchers.IO) {
-                authRepository.signUpUserWithEmail(
-                    signUpState.firstName,
-                    signUpState.lastName,
-                    signUpState.email,
-                    signUpState.password
-                )
-            }
-            signUpState.isSignupLoading = false
-
-            if (!response.hasError) {
-                context.toast("Sign up successful. Go ahead and log in to your account.")
-                signUpState.clearState()
-                navigateToSignInScreen()
-            } else {
-                context.toast("There was a problem signing up. Please try again.")
+            signUpUseCase(
+                firstName = data.firstName,
+                lastName = data.lastName,
+                email = data.email,
+                password = data.password
+            ).collect { resource ->
+                when (resource) {
+                    is Resource.Loading -> {
+                        isLoading.value = false
+                    }
+                    is Resource.Success -> {
+                        isLoading.value = false
+                        context.toast("Sign up successful. Go ahead and log in to your account.")
+                        navigateToSignInScreen()
+                    }
+                    is Resource.Error -> {
+                        isLoading.value = false
+                        context.toast("There was a problem signing up. Please try again.")
+                    }
+                }
             }
         }
     }
+
+    fun resetPassword() {
+        if (!passwordResetState.validate()) {
+            return
+        }
+
+        val data  = passwordResetState.getData(PasswordResetData::class)
+
+        viewModelScope.launch {
+
+        }
+    }
+
+    data class SignUpData(
+        val firstName: String, val lastName: String, val email: String, val password: String
+    )
+
+    data class LoginData(
+        val email: String, val password: String
+    )
+
+    data class PasswordResetData(val email: String)
 }

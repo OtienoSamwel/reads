@@ -11,10 +11,8 @@ import androidx.compose.material.icons.rounded.AccountCircle
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Search
-import androidx.compose.material.ripple.LocalRippleTheme
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -30,7 +28,6 @@ import com.otienosamwel.reads.ui.presentation.features.collections.Collections
 import com.otienosamwel.reads.ui.presentation.features.discover.Discover
 import com.otienosamwel.reads.ui.presentation.features.home.Home
 import com.otienosamwel.reads.ui.theme.ReadsTheme
-import com.otienosamwel.reads.utils.ClearRippleTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -57,7 +54,7 @@ fun Navigation() {
     { scaffoldPaddingValues ->
         NavHost(
             mainNavController,
-            startDestination = Screens.Discover.route,
+            startDestination = Screens.Home.route,
             modifier = Modifier.padding(scaffoldPaddingValues)
         ) {
             composable(route = Screens.Home.route) { Home(navController = mainNavController) }
@@ -73,27 +70,26 @@ fun BottomNav(navController: NavController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
-    CompositionLocalProvider(LocalRippleTheme provides ClearRippleTheme) {
-        NavigationBar(modifier = Modifier.fillMaxWidth()) {
-            bottomNavScreens.forEach { screen ->
-                NavigationBarItem(
-                    selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
-                    icon = { Icon(imageVector = screen.Icon!!, contentDescription = screen.name) },
-                    label = { Text(text = screen.name) },
-                    alwaysShowLabel = true,
-                    onClick = {
-                        navController.navigate(screen.route) {
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-                            launchSingleTop = true
-                            restoreState = true
+    NavigationBar(modifier = Modifier.fillMaxWidth()) {
+        bottomNavScreens.forEach { screen ->
+            NavigationBarItem(
+                selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
+                icon = { Icon(imageVector = screen.Icon!!, contentDescription = screen.name) },
+                label = { Text(text = screen.name) },
+                alwaysShowLabel = true,
+                onClick = {
+                    navController.navigate(screen.route) {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
                         }
+                        launchSingleTop = true
+                        restoreState = true
                     }
-                )
-            }
+                }
+            )
         }
     }
+
 }
 
 private sealed class Screens(val route: String, val name: String, val Icon: ImageVector?) {
